@@ -56,7 +56,7 @@ def get_gl_entries(filters):
 			voucher_type, voucher_no, cost_center, remarks, is_opening, against
 		from `tabGL Entry`
 		where {conditions} {group_by_condition}
-		order by posting_date, account"""\
+		order by posting_date"""\
 		.format(conditions=get_conditions(filters), group_by_condition=group_by_condition),
 		filters, as_dict=1, debug=True)
 
