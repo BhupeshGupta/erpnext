@@ -24,7 +24,8 @@ def validate_filters(filters, account_details):
 		frappe.throw(_("Account {0} does not exists").format(filters.account))
 
 	if filters.get("account") and filters.get("group_by_account") \
-			and account_details[filters.account].group_or_ledger == "Ledger":
+			and account_details[filters.account].group_or_ledger == "Ledger"\
+			and cint(filters.get("show_like_accounts")) == 0:
 		frappe.throw(_("Can not filter based on Account, if grouped by Account"))
 
 	if filters.get("voucher_no") and filters.get("group_by_voucher"):
