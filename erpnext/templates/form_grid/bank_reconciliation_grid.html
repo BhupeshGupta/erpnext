@@ -1,0 +1,35 @@
+{% if(!doc) { %}
+	<div class="row">
+		<div class="col-sm-2">{%= __("Voucher") %}</div>
+		<div class="col-sm-4">{%= __("Against") %}</div>
+		<div class="col-sm-2">{%= __("Cheque") %}</div>
+		<div class="col-sm-2">{%= __("Clearing") %}</div>
+		<div class="col-sm-2">{%= __("Amount") %}</div>
+	</div>
+{% } else { %}
+
+    <div class="row">
+        <div class="col-sm-2">
+	        {%= doc.get_formatted("posting_date") %}<br>
+            {%= doc.get_formatted("voucher_id") %}
+        </div>
+
+        <div class="col-sm-4">
+            {%= doc.get_formatted("against_account") %}
+        </div>
+
+        <div class="col-sm-2">
+	        {%= doc.get_formatted("cheque_date") %}
+	        <strong>{%= doc.cheque_number%}</strong><br>
+        </div>
+
+        <div class="col-sm-2">
+            {%= doc.get_formatted("clearance_date") || "" %}
+        </div>
+
+        <div class="col-sm-2">
+            {%= doc.get_formatted("debit") || doc.get_formatted("credit") %} {%= (doc.debit > 0) ? __("Dr"): __("Cr") %}
+        </div>
+    </div>
+
+{% } %}
