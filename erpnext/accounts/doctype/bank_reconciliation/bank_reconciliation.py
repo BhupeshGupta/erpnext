@@ -17,20 +17,18 @@ class BankReconciliation(Document):
 			msgprint("Bank Account, From Date and To Date are Mandatory")
 			return
 
-		condition = ""
-		if not self.include_reconciled_entries:
-			condition = "and ifnull(clearance_date, '') in ('', '0000-00-00')"
-
+		condition = "and ifnull(t1.clearance_date, '9999-10-10') >= \"{}\""
+		condition = condition.format(self.from_date if self.include_reconciled_entries else self.to_date)
 
 		dl = frappe.db.sql("""select t1.name, t1.cheque_no, t1.cheque_date, t2.debit,
 				t2.credit, t1.posting_date, t2.against_account, t1.clearance_date
 			from
 				`tabJournal Voucher` t1, `tabJournal Voucher Detail` t2
 			where
-				t2.parent = t1.name and t2.account = %s
-				and t1.posting_date >= %s and t1.posting_date <= %s and t1.docstatus=1
-				and ifnull(t1.is_opening, 'No') = 'No' %s""" %
-				('%s', '%s', '%s', condition), (self.bank_account, self.from_date, self.to_date), as_dict=1)
+				t2.parent = t1.name and t2.account = %s and t1.docstatus=1
+				and ifnull(t1.is_opening, 'No') = 'No' %s
+			order by t1.clearance_date""" %
+				('%s', condition), (self.bank_account), as_dict=1)
 
 		self.set('entries', [])
 		self.total_amount = 0.0
