@@ -17,7 +17,7 @@ class JournalVoucher(AccountsController):
 	def validate(self):
 		if not self.is_opening:
 			self.is_opening='No'
-		self.clearance_date = None
+		# self.clearance_date = None
 
 		super(JournalVoucher, self).validate_date_with_fiscal_year()
 
