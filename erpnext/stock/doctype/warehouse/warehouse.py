@@ -9,6 +9,7 @@ from frappe import throw, msgprint, _
 from frappe.model.document import Document
 
 class Warehouse(Document):
+	nsm_parent_field = 'parent_warehouse'
 
 	def autoname(self):
 		suffix = " - " + frappe.db.get_value("Company", self.company, "abbr")
@@ -39,6 +40,7 @@ class Warehouse(Document):
 
 	def on_update(self):
 		self.create_account_head()
+		self.update_nsm_model()
 
 	def create_account_head(self):
 		if cint(frappe.defaults.get_global_default("auto_accounting_for_stock")):
@@ -98,6 +100,8 @@ class Warehouse(Document):
 				where warehouse = %s""", self.name):
 			throw(_("Warehouse can not be deleted as stock ledger entry exists for this warehouse."))
 
+		self.update_nsm_model()
+
 	def before_rename(self, olddn, newdn, merge=False):
 		# Add company abbr if not provided
 		from erpnext.setup.doctype.company.company import get_name_with_abbr
@@ -135,3 +139,10 @@ class Warehouse(Document):
 		frappe.db.set_default("allow_negative_stock",
 			frappe.db.get_value("Stock Settings", None, "allow_negative_stock"))
 		frappe.db.auto_commit_on_many_writes = 0
+
+
+	def update_nsm_model(self):
+		"""update lft, rgt indices for nested set model"""
+		import frappe
+		import frappe.utils.nestedset
+		frappe.utils.nestedset.update_nsm(self)

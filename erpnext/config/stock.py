@@ -104,6 +104,15 @@ def get_data():
 					"doctype": "Item Group",
 				},
 				{
+					"type": "page",
+					"name": "Sales Browser",
+					"icon": "icon-sitemap",
+					"label": _("Warehouse Tree"),
+					"link": "Sales Browser/Warehouse",
+					"description": _("Tree of Warehouse."),
+					"doctype": "Warehouse",
+				},
+				{
 					"type": "doctype",
 					"name": "UOM",
 					"label": _("Unit of Measure") + " (UOM)",

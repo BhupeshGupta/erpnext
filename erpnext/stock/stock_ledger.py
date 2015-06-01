@@ -18,6 +18,8 @@ def make_sl_entries(sl_entries, is_amended=None, allow_negative_stock=False):
 	if sl_entries:
 		from erpnext.stock.utils import update_bin
 
+		validate_warehouse_group(sl_entries)
+
 		cancel = True if sl_entries[0].get("is_cancelled") == "Yes" else False
 		if cancel:
 			set_as_cancel(sl_entries[0].get('voucher_no'), sl_entries[0].get('voucher_type'))
@@ -375,3 +377,13 @@ def get_valuation_rate(item_code, warehouse, allow_zero_rate=False):
 		frappe.throw(_("Purchase rate for item: {0} not found, which is required to book accounting entry (expense). Please mention item price against a buying price list.").format(item_code))
 
 	return valuation_rate
+
+def validate_warehouse_group(sl_entries):
+		warehouse_csv = '"{}"'.format('","'.join([sle['warehouse'] for sle in sl_entries]))
+		group_rs = frappe.db.sql("""
+		SELECT name FROM `tabWarehouse`
+		WHERE is_group='YES'
+		AND name IN ({})""".format(warehouse_csv)
+		)
+		if group_rs:
+			frappe.throw("Can not make stock transactions against group warehouse {}".format(', '.join([i[0] for i in group_rs])))
