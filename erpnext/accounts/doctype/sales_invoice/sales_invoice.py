@@ -514,6 +514,8 @@ class SalesInvoice(SellingController):
 			)
 
 	def make_tax_gl_entries(self, gl_entries):
+		if cint(self.tax_paid_by_supplier) == 0:
+			return
 		for tax in self.get("other_charges"):
 			if flt(tax.tax_amount_after_discount_amount):
 				gl_entries.append(
