@@ -50,6 +50,9 @@ def execute(filters=None):
 		get_balance_row(_("Expected balance as per bank"), bank_bal)
 	]
 
+	from flows.stdlogger import root
+	root.debug(rs_data)
+
 	return columns, rs_data
 
 
@@ -77,6 +80,9 @@ def get_entries(filters):
 
 
 def get_display_entries(filters):
+
+	columns = get_columns()
+
 	cleared_entries = frappe.db.sql("""select
 			jv.posting_date, jv.name, jvd.debit, jvd.credit,
 			jvd.against_account, jv.cheque_no, jv.cheque_date, jv.clearance_date
@@ -99,7 +105,11 @@ def get_display_entries(filters):
 			and ifnull(jv.is_opening, 'No') = 'No'
 		order by jv.name DESC""", filters, as_list=1)
 
-	return cleared_entries + [[], ["", "Uncleared Entries"]] + uncleared_entries
+	empty_row = [""] * len(columns)
+
+	return cleared_entries if cleared_entries else [empty_row]+\
+		   [empty_row, ["", 'Uncleared Entries']] +\
+		   uncleared_entries
 
 
 def get_balance_row(label, amount):
