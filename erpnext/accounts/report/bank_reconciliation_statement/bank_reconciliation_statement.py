@@ -107,7 +107,8 @@ def get_display_entries(filters):
 
 	empty_row = [""] * len(columns)
 
-	return cleared_entries if cleared_entries else [empty_row]+\
+	return [["", 'Cleared Entries']] +\
+			cleared_entries+\
 		   [empty_row, ["", 'Uncleared Entries']] +\
 		   uncleared_entries
 
