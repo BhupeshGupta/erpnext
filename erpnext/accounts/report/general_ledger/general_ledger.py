@@ -132,7 +132,7 @@ def get_data_with_opening_closing(filters, account_details, gl_entries):
 def initialize_gle_map(gl_entries):
 	gle_map = frappe._dict()
 	for gle in gl_entries:
-		gle_map.setdefault(gle.account, frappe._dict({
+		gle_map.setdefault(strip_account(gle.account), frappe._dict({
 			"opening": 0,
 			"entries": [],
 			"total_debit": 0,
@@ -147,12 +147,12 @@ def get_accountwise_gle(filters, gl_entries, gle_map):
 	for gle in gl_entries:
 		amount = flt(gle.debit, 3) - flt(gle.credit, 3)
 		if filters.get("account") and (gle.posting_date<filters.from_date or cstr(gle.is_opening)=="Yes"):
-			gle_map[gle.account].opening += amount
+			gle_map[strip_account(gle.account)].opening += amount
 			opening += amount
 		elif gle.posting_date <= filters.to_date:
-			gle_map[gle.account].entries.append(gle)
-			gle_map[gle.account].total_debit += flt(gle.debit, 3)
-			gle_map[gle.account].total_credit += flt(gle.credit, 3)
+			gle_map[strip_account(gle.account)].entries.append(gle)
+			gle_map[strip_account(gle.account)].total_debit += flt(gle.debit, 3)
+			gle_map[strip_account(gle.account)].total_credit += flt(gle.credit, 3)
 
 			total_debit += flt(gle.debit, 3)
 			total_credit += flt(gle.credit, 3)
@@ -174,3 +174,7 @@ def get_result_as_list(data):
 			d.get("against"), d.get("cost_center"), d.get("remarks")])
 
 	return result
+
+
+def strip_account(account):
+	return account.split('-')[0].strip()
