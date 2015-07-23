@@ -74,7 +74,8 @@ def get_conditions(filters):
 
 		# Hack to exclude aggarwal's outstanding
 		if cint(filters.get("show_like_accounts")) == 1 and 'Aggarwal' not in filters.get("company"):
-			acc_cond += "AND NAME NOT LIKE '%- AGE'"
+			if frappe.db.get_value('Account', filters={'name': filters.get("account")}, fieldname='account_type') != 'Imprest':
+				acc_cond += "AND NAME NOT LIKE '%- AGE'"
 
 		account_list_dict = frappe.db.sql(acc_cond.format(account_like), as_dict=True)
 
