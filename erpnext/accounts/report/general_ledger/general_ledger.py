@@ -69,8 +69,15 @@ def get_conditions(filters):
 		account_like = filters.get("account")
 		if cint(filters.get("show_like_accounts")) == 1:
 			account_like = filters.get("account").split("-")[0].strip() + " - "
-			account_list_dict = frappe.db.sql("""SELECT lft, rgt FROM `tabAccount` WHERE NAME LIKE "{}%" AND
-			NAME NOT LIKE '%- AGE';""".format(account_like), as_dict=True)
+
+		acc_cond = """SELECT lft, rgt FROM `tabAccount` WHERE NAME LIKE "{}%" """
+
+		# Hack to exclude aggarwal's outstanding
+		if cint(filters.get("show_like_accounts")) == 1 and 'Aggarwal' not in filters.get("company"):
+			acc_cond += "AND NAME NOT LIKE '%- AGE'"
+
+		account_list_dict = frappe.db.sql(acc_cond.format(account_like), as_dict=True)
+
 		conditions.append("""account in (select name from tabAccount
 			where ({}) and docstatus<2)""".format(" or ".join(["(lft>={} and rgt<={})".format(a.lft, a.rgt) for a in account_list_dict])))
 	else:
