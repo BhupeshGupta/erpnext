@@ -68,7 +68,7 @@ def get_conditions(filters):
 	if filters.get("account"):
 		account_like = filters.get("account")
 		if cint(filters.get("show_like_accounts")) == 1:
-			account_like = filters.get("account").split("-")[0].strip() + " - "
+			account_like = '-'.join(filters.get("account").split("-")[:-1]).strip() + " - "
 
 		acc_cond = """SELECT lft, rgt FROM `tabAccount` WHERE NAME LIKE "{}%" """
 
