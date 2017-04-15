@@ -46,7 +46,7 @@ class SalesInvoice(SellingController):
 		self.validate_with_previous_doc()
 		self.validate_uom_is_integer("stock_uom", "qty")
 		self.check_stop_sales_order("sales_order")
-		self.validate_customer_account()
+		# self.validate_customer_account()
 		self.validate_debit_acc()
 		self.validate_fixed_asset_account()
 		self.clear_unallocated_advances("Sales Invoice Advance", "advance_adjustment_details")
